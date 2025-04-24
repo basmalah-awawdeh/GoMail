@@ -2,12 +2,12 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "../BloomFilter/BloomFilter.h"
-#include "../HashFunctions/HashFunction.h"
-#include "../UrlCheck/url_blacklist.h"
-#include "../FileManager/BlacklistFileManager.h"
-#include "../FileManager/BloomFilterFileManager.h"
-#include "../CLI/CLI.h"  
+#include "BloomFilter/BloomFilter.h"
+#include "HashFunctions/HashFunction.h"
+#include "UrlCheck/url_blacklist.h"
+#include "FileManager/BlacklistFileManager.h"
+#include "FileManager/BloomFilterFileManager.h"
+#include "CLI/CLI.h"  
 
 
 int main() {
@@ -15,35 +15,34 @@ int main() {
     int size = 0;
     std::vector<int> hash_types;
 
-    // Read input lines until we get a valid configuration for size and hash functions
-    while (size == 0 && std::getline(std::cin, line)) {
-        if (extractSizeAndHashTypes(line, size, hash_types)) {
-            break; // Successfully parsed the configuration, exit the loop
+    // reading input lines and ignoring invalid until we get a valid configuration for size and hash functions
+    while (size==0 && std::getline(std::cin, line)) {
+        if (inputExtracting(line, size, hash_types)) {
+            break;
         }
     }
 
-    // If no valid configuration is found
-    if (size == 0 || hash_types.empty()) {
-        std::cerr << "Invalid size or no hash functions specified" << std::endl;
+    // no valid configuration is found
+    if (size==0 || hash_types.empty()) {
         return 1;
     }
 
-    // Initialize the Bloom filter with the provided size and hash functions
-    auto bloom_filter = createBloomFilterWithHashes(size, hash_types);
+    // initializing Bloom filter with size and hash functions from input
+    auto bloom_filter = blommFilterhashesCreating(size, hash_types);
 
-    // Create a blacklistURL that will use the bloom filter for URL checking
+    // creating a blacklistURL that will use the bloom filter for Url checking
     BlacklistURL blacklist(bloom_filter);
 
-    // Create a file manager object
+    // creating a file manager object
     BloomFilterFileManager bloomFileManager("data/bloom_filter.dat");
     BlacklistFileManager blacklistFileManager("data/blacklist.dat");
 
 
-    // Try to load existing data
+    // loading existing data
     bloomFileManager.load(blacklist);
     blacklistFileManager.load(blacklist);
-    // Handle user commands (add or checkURL)
-    handleUserCommands(blacklistFileManager, bloomFileManager, blacklist);
+    //handling user commands
+    commandsHandling(blacklistFileManager, bloomFileManager, blacklist);
 
     return 0;
 }
