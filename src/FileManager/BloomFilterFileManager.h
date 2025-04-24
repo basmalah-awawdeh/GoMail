@@ -7,7 +7,7 @@
 
 class BloomFilterFileManager : public IFileManager {
 private:
-    std::string bit_array_filename;  // Filename for Bloom filter data
+    std::string bit_array_filename;
 public:
     BloomFilterFileManager(const std::string& filename = "data/bloom_filter.dat");
 

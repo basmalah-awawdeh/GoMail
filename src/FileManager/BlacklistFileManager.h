@@ -7,11 +7,14 @@
 
 class BlacklistFileManager : public IFileManager {
 private:
-    std::string blacklist_filename;  // Filename for blacklist data
+    std::string blacklist_filename; 
 public:
     BlacklistFileManager(const std::string& filename = "data/blacklist.dat");
+    //saving blakclist to file and returning true if added sucessfuly else false
     bool save(const BlacklistURL& blacklist) override;
+    // loading blacklist from file, returning true if ended successfuly else false
     bool load(BlacklistURL& blacklist) override;
+    //chcking if blacklist file exist, if yes return true o.w false
     bool filesExist() const override;
 };
 

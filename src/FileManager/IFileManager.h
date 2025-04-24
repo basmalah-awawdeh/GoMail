@@ -8,14 +8,14 @@ class IFileManager {
 public:
     virtual ~IFileManager() = default;  
 
-    // Save data to file
-    virtual bool save(const BlacklistURL& blacklist) = 0;  
+    //saving data to file
+    virtual bool save(const BlacklistURL& blacklist)=0;  
     
-    // Load data from file
-    virtual bool load(BlacklistURL& blacklist) = 0; 
+    //loading data from file
+    virtual bool load(BlacklistURL& blacklist)=0; 
     
-    // Check if files exist
-    virtual bool filesExist() const = 0; 
+    // checking if files exists
+    virtual bool filesExist() const=0; 
 };
 
 #endif
