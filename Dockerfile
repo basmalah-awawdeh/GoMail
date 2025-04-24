@@ -19,6 +19,5 @@ RUN echo '#!/bin/bash' > /usr/src/myapp/run.sh && \
     chmod +x /usr/src/myapp/run.sh
 WORKDIR /usr/src/myapp
 ENTRYPOINT ["/usr/src/myapp/run.sh"]
-
 #defaul run main
 CMD []
