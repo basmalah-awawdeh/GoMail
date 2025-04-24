@@ -10,16 +10,16 @@
 #include "../FileManager/BlacklistFileManager.h"
 #include "../FileManager/BloomFilterFileManager.h"
 
-//creating hash functions according to the types in inupt
+// Creates hash functions based on the types provided
 std::vector<std::shared_ptr<HashFunction>> createHashFunctionsFromTypes(const std::vector<int>& hash_types);
 
-// extracting hash types and bloom filter size
-bool inputExtracting(const std::string& line, int& size, std::vector<int>& hash_types);
+// Extracts the size of the Bloom filter and the types of hash functions from the configuration string
+bool extractSizeAndHashTypes(const std::string& line, int& size, std::vector<int>& hash_types);
 
-//creating blomo filter with size and hash funcs
-std::shared_ptr<BloomFilter> blommFilterhashesCreating(int size, const std::vector<int>& hash_types);
+// Create a new Bloom filter with specifed size and the list of hash.
+std::shared_ptr<BloomFilter> createBloomFilterWithHashes(int size, const std::vector<int>& hash_types);
 
-//handling input commands for exampel add and check
-void commandsHandling(BlacklistFileManager& blacklistFileManager, BloomFilterFileManager& bloomFileManager, BlacklistURL& blacklist);
+// Handle user commands (add/ check URL)
+void handleUserCommands(BlacklistFileManager& blacklistFileManager, BloomFilterFileManager& bloomFileManager, BlacklistURL& blacklist);
 
 #endif 

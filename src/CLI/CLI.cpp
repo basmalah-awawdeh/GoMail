@@ -7,90 +7,95 @@
 #include <sstream>
 #include <iostream>
 
-//this func create hash funcs acording to the types using the make hash
+// Function to create hash functions based on the provided types
 std::vector<std::shared_ptr<HashFunction>> createHashFunctionsFromTypes(const std::vector<int>& hash_types) {
     std::vector<std::shared_ptr<HashFunction>> hash_functions;
     for (int type : hash_types) {
-        hash_functions.push_back(MakeHash::createHashFunction(type));
+        hash_functions.push_back(MakeHash::createHashFunction(type)); // Factory for creating hash functions
     }
     return hash_functions;
 }
 
-// // this func find the beginning (first element) of the string 
-size_t getBeginning(const std::string& str) {
+// Helper function to find the first digit in a string
+size_t getFirstDigitPosition(const std::string& str) {
     return str.find_first_of("0123456789");
 }
 
-// parsing config for size and hash function types
-bool inputExtracting(const std::string& line, int& size, std::vector<int>& hash_types) {
-    size_t pos = getBeginning(line);
+// Parse configuration for size and hash function types
+bool extractSizeAndHashTypes(const std::string& line, int& size, std::vector<int>& hash_types) {
+    size_t pos = getFirstDigitPosition(line);
     if (pos == std::string::npos) {
         return false; // No digits found
     }
 
     std::istringstream iss(line.substr(pos));
 
-    //here we read the size and check if invaled
+    // Read the size
     if (!(iss >> size)) {
-        return false;
+        return false; // Invalid size
     }
 
-    // reads hash types
+    // Read hash types
     int type;
     while (iss >> type) {
-        //adding hashes to vecrors
+        // Add each hash type to the hash_types vector.
         hash_types.push_back(type); 
     }
-    //return when it is not empty
-    return !(hash_types.empty());
+
+    return !hash_types.empty(); // Ensure that hash types are provided
 }
 
-// creating bloom filter with size and hash functions from inptu of user
-std::shared_ptr<BloomFilter> blommFilterhashesCreating(int size, const std::vector<int>& hash_types) {
+// Create and initialize the Bloom filter with the given size and hash functions
+std::shared_ptr<BloomFilter> createBloomFilterWithHashes(int size, const std::vector<int>& hash_types) {
     auto hash_functions = createHashFunctionsFromTypes(hash_types);
-    std::shared_ptr<BloomFilter> bloom_filter_pointer = std::make_shared<BloomFilter>(size, hash_functions);
-    return bloom_filter_pointer;
+    return std::make_shared<BloomFilter>(size, hash_functions);
 }
 
-// here we're handling user commands (adding/checking) in a loop
-void commandsHandling(BlacklistFileManager& blacklistFileManager, BloomFilterFileManager& bloomFileManager, BlacklistURL& blacklist) {
+// Handle user commands (adding/checking URLs) in a loop
+void handleUserCommands(BlacklistFileManager& blacklistFileManager, BloomFilterFileManager& bloomFileManager, BlacklistURL& blacklist) {
     std::string line;
-    int command;
-    std::string url;
-    bool actuallyBlacklisted;
     while (std::getline(std::cin, line)) {
-        size_t pos = getBeginning(line);
-        //skipping when no degits
-        if (pos==std::string::npos) {
-            continue;
+        size_t pos = getFirstDigitPosition(line);
+        if (pos == std::string::npos) {
+            continue; // No digits in line, skip
         }
 
-        // extracting commands from string, ignore invalid input
-        std::istringstream cmdStream(line.substr(pos));        
-        if (!(cmdStream >> command)) {
-            continue; 
+        // Extract command from the string
+        std::istringstream cmdStream(line.substr(pos));
+        int cmd;
+        
+        if (!(cmdStream >> cmd)) {
+            continue;  // Invalid format, ignore
         }
 
+        std::string url;
         std::getline(cmdStream >> std::ws, url);
-//1 ==> adding valid url
-        if(command==1){
+
+        // Switched based on command type(1- add, 2- checkURL)
+        switch (cmd) {
+            case 1:  // Add URL to blacklist
+
+                // Validate the URL before adding
                 if (!url.empty() && isValidURL(url)) {
                     blacklist.addURL(url);
                     blacklistFileManager.save(blacklist);
                     bloomFileManager.save(blacklist);
                 }
-            }
-            //2 ===> checking if url is blacklisted
-            if(command==2) {
+                break;
+                
+            case 2:  // Check if URL is blacklisted
                 if (blacklist.isBlacklisted(url)) {
-                     actuallyBlacklisted = blacklist.isFalsePositive(url);
+                    
+                    // Confirm if actually is black list
+                    bool actuallyBlacklisted = blacklist.isFalsePositive(url);
                     std::cout << "true " << (actuallyBlacklisted ? "true" : "false") << std::endl;
-                }else {
+                } else {
                     std::cout << "false" << std::endl; 
                 }
-            }
-            else{
-                continue;
+                break;
+                
+            default:
+                continue;  // Ignore invalid commands
         }
     }
 }
