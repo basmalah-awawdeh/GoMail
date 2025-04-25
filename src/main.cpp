@@ -39,7 +39,6 @@ int main() {
 }
 
 //g++ -I./src/BloomFilter -I./src/HashFunction -I./src/UrlCheck -I./src/Tests -I./src/FileManager src/main.cpp     src/BloomFilter/BloomFilter.cpp src/HashFunctions/DoubleHash.cpp     src/HashFunctions/HashFunctionFactory.cpp src/HashFunctions/StdHash.cpp     src/UrlCheck/url_blacklist.cpp src/UrlCheck/url_validation.cpp     src/FileManager/BlacklistFileManager.cpp src/FileManager/BloomFilterFileManager.cpp src/CLI/CLI.cpp -o main
-
 /*
 cd /mnt/c/Users/בסמלה/Desktop/barIlan/programming/GoMail/GoMail/GoMail
  rm -rf build
