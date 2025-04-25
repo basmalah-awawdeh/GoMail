@@ -4,20 +4,21 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 COPY . /usr/src/myapp
 WORKDIR /usr/src/myapp
-RUN rm -rf build
-RUN mkdir -p build
+RUN rm -rf build && mkdir -p build
 WORKDIR /usr/src/myapp/build
 RUN cmake .. && make
-RUN mkdir -p data
+RUN mkdir -p /usr/src/myapp/data && chmod 777 /usr/src/myapp/data
 #deciding what to run, default run the code, test to run the tests
-RUN echo '#!/bin/bash' > /usr/src/myapp/run.sh && \
-    echo 'if [ "$1" = "test" ]; then' >> /usr/src/myapp/run.sh && \
-    echo '  cd /usr/src/myapp/build && ./tests' >> /usr/src/myapp/run.sh && \
-    echo 'else' >> /usr/src/myapp/run.sh && \
-    echo '  cd /usr/src/myapp/build && ./gomail' >> /usr/src/myapp/run.sh && \
-    echo 'fi' >> /usr/src/myapp/run.sh && \
-    chmod +x /usr/src/myapp/run.sh
-WORKDIR /usr/src/myapp
-ENTRYPOINT ["/usr/src/myapp/run.sh"]
-#defaul run main
+RUN echo '#!/bin/bash' > /entrypoint.sh && \
+    echo 'mkdir -p /usr/src/myapp/data' >> /entrypoint.sh && \
+    echo 'cd /usr/src/myapp/build' >> /entrypoint.sh && \
+    echo 'if [ "$1" = "test" ]; then' >> /entrypoint.sh && \
+    echo '  ./tests' >> /entrypoint.sh && \
+    echo 'else' >> /entrypoint.sh && \
+    echo '  ./gomail' >> /entrypoint.sh && \
+    echo 'fi' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+WORKDIR /usr/src/myapp/build
+ENTRYPOINT ["/entrypoint.sh"]
+#default run main
 CMD []
